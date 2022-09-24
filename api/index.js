@@ -7,13 +7,13 @@ app.use(express.json());
 
 const users = [
   {
-    id: 1,
+    id: '1',
     username: 'jhon',
     password: 'jhon0908',
     isAdmin: true,
   },
   {
-    id: 2,
+    id: '2',
     username: 'jane',
     password: 'jane0908',
     isAdmin: false,
@@ -42,7 +42,7 @@ app.post('/api/login', (req, res) => {
 });
 
 const verify = (req, res, next) => {
-  const autHeader = res.headers.Authorization;
+  const autHeader = req.headers.authorization;
   if (autHeader) {
     const token = autHeader.split(' ')[1];
 
@@ -58,6 +58,14 @@ const verify = (req, res, next) => {
     res.status(401).json('You are not authentificated');
   }
 };
+
+app.delete('/api/users/:userId', verify, (req, res) => {
+  if (req.user.id === req.params.userId || req.user.isAdmin) {
+    res.status(200).json('User has been deleted.');
+  } else {
+    res.status(403).json('You are not allowed to delete this user!');
+  }
+});
 
 app.listen(5000, () => {
   console.log('Server is running on port 5000');
