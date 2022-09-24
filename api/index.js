@@ -41,6 +41,24 @@ app.post('/api/login', (req, res) => {
   }
 });
 
+const verify = (req, res, next) => {
+  const autHeader = res.headers.Authorization;
+  if (autHeader) {
+    const token = autHeader.split(' ')[1];
+
+    jwt.verify(token, 'mySecretKey', (err, user) => {
+      if (err) {
+        return res.status(403).json('Token is not valid');
+      }
+
+      req.user = user;
+      next();
+    });
+  } else {
+    res.status(401).json('You are not authentificated');
+  }
+};
+
 app.listen(5000, () => {
   console.log('Server is running on port 5000');
 });
